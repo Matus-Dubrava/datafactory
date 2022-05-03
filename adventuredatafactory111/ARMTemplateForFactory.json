@@ -49,7 +49,7 @@
 						"typeProperties": {
 							"source": {
 								"type": "SqlDWSource",
-								"sqlReaderQuery": "select \n\tempid,\n\tempname,\n\tjob,\n\t(\n\t\tcase when mgrid = 'NULL' then null\n\t\t\t else mgrid\n\t\tend\n\t) as mgrid,\n\tconvert(date, hiredate) as hiredate,\n\tconvert(decimal(10,2),\n\t\tcase when salary = 'NULL' then null\n\t\t\t else salary\n\t\tend\n\t) as salary,\n\tconvert(decimal(10,2),\n\t\tcase when commission = 'NULL' then null \n\t\t\t else commission\n\t\tend\n\t) as commission,\n\tdeptid,\n\tcurrent_timestamp as load_timestamp,\n\t(\n\t\tcoalesce((select max(load_id) from emp), 0)\n\t) + 1 as load_id\nfrom emp_ext as ee\nwhere not exists (\n\tselect 1 from emp as e \n\twhere e.empid = ee.empid\n)",
+								"sqlReaderStoredProcedureName": "[[dbo].[empdata]",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
