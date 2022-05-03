@@ -1,0 +1,406 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adventuredatafactory111"
+		},
+		"AdventureDataLake_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AdventureDataLake'"
+		},
+		"AdventureDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AdventureDatabase'"
+		},
+		"AdventureSynapseWarehouse_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AdventureSynapseWarehouse'"
+		},
+		"AdventureDataLake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adventuredatalake1.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlDWSource",
+								"sqlReaderQuery": "select \n\tempid,\n\tempname,\n\tjob,\n\t(\n\t\tcase when mgrid = 'NULL' then null\n\t\t\t else mgrid\n\t\tend\n\t) as mgrid,\n\tconvert(date, hiredate) as hiredate,\n\tconvert(decimal(10,2),\n\t\tcase when salary = 'NULL' then null\n\t\t\t else salary\n\t\tend\n\t) as salary,\n\tconvert(decimal(10,2),\n\t\tcase when commission = 'NULL' then null \n\t\t\t else commission\n\t\tend\n\t) as commission,\n\tdeptid\nfrom emp_ext",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"allowCopyCommand": true,
+								"copyCommandSettings": {}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "AdventureDataLake",
+									"type": "LinkedServiceReference"
+								},
+								"path": "data/out"
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "empid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "empid",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "empname",
+											"type": "String"
+										},
+										"sink": {
+											"name": "empname",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "job",
+											"type": "String"
+										},
+										"sink": {
+											"name": "job",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "mgrid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "mgrid",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "hiredate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "hiredate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "salary",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "salary",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "commission",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "commission",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "deptid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "deptid",
+											"type": "Int32"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "EmployeesExternalDWTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "EmployeesDWTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/EmployeesExternalDWTable')]",
+				"[concat(variables('factoryId'), '/datasets/EmployeesDWTable')]",
+				"[concat(variables('factoryId'), '/linkedServices/AdventureDataLake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EmployeesCSV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AdventureDataLake",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "emp.csv",
+						"folderPath": "raw",
+						"fileSystem": "data"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "empid",
+						"type": "String"
+					},
+					{
+						"name": "empname",
+						"type": "String"
+					},
+					{
+						"name": "job",
+						"type": "String"
+					},
+					{
+						"name": "mgrid",
+						"type": "String"
+					},
+					{
+						"name": "hiredate",
+						"type": "String"
+					},
+					{
+						"name": "salary",
+						"type": "String"
+					},
+					{
+						"name": "commission",
+						"type": "String"
+					},
+					{
+						"name": "deptid",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AdventureDataLake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EmployeesDWTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AdventureSynapseWarehouse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "empid",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "empname",
+						"type": "varchar"
+					},
+					{
+						"name": "job",
+						"type": "varchar"
+					},
+					{
+						"name": "mgrid",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "hiredate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "salary",
+						"type": "decimal",
+						"precision": 11,
+						"scale": 3
+					},
+					{
+						"name": "commission",
+						"type": "decimal",
+						"precision": 11,
+						"scale": 3
+					},
+					{
+						"name": "deptid",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "emp"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AdventureSynapseWarehouse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EmployeesExternalDWTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AdventureSynapseWarehouse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "empid",
+						"type": "varchar"
+					},
+					{
+						"name": "empname",
+						"type": "varchar"
+					},
+					{
+						"name": "job",
+						"type": "varchar"
+					},
+					{
+						"name": "mgrid",
+						"type": "varchar"
+					},
+					{
+						"name": "hiredate",
+						"type": "varchar"
+					},
+					{
+						"name": "salary",
+						"type": "varchar"
+					},
+					{
+						"name": "commission",
+						"type": "varchar"
+					},
+					{
+						"name": "deptid",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "emp_ext"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AdventureSynapseWarehouse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AdventureDataLake')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AdventureDataLake_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AdventureDataLake_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AdventureDatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AdventureDatabase_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AdventureSynapseWarehouse')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('AdventureSynapseWarehouse_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
