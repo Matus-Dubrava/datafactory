@@ -1,0 +1,138 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderQuery": "select \n\tempid,\n\tempname,\n\tjob,\n\t(\n\t\tcase when mgrid = 'NULL' then null\n\t\t\t else mgrid\n\t\tend\n\t) as mgrid,\n\tconvert(date, hiredate) as hiredate,\n\tconvert(decimal(10,2),\n\t\tcase when salary = 'NULL' then null\n\t\t\t else salary\n\t\tend\n\t) as salary,\n\tconvert(decimal(10,2),\n\t\tcase when commission = 'NULL' then null \n\t\t\t else commission\n\t\tend\n\t) as commission,\n\tdeptid\nfrom emp_ext",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"allowCopyCommand": true
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AdventureDataLake",
+							"type": "LinkedServiceReference"
+						},
+						"path": "data/out"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "empid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "empid",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "empname",
+									"type": "String"
+								},
+								"sink": {
+									"name": "empname",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "job",
+									"type": "String"
+								},
+								"sink": {
+									"name": "job",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "mgrid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "mgrid",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "hiredate",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "hiredate",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "salary",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "salary",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "commission",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "commission",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "deptid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "deptid",
+									"type": "Int32"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "EmployeesExternalDWTable",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "EmployeesDWTable",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
