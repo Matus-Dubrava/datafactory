@@ -148,6 +148,26 @@
 											"name": "deptid",
 											"type": "Int32"
 										}
+									},
+									{
+										"source": {
+											"name": "load_time",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "load_time",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "load_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "load_id",
+											"type": "Int32"
+										}
 									}
 								]
 							}
