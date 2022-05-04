@@ -23,6 +23,10 @@
 			"type": "string",
 			"defaultValue": "https://adventuredatalake1.dfs.core.windows.net"
 		},
+		"TriggerOnCreateBlobEvent_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/4cedc5dd-e3ad-468d-bf66-32e31bdb9148/resourceGroups/1-abf7d663-playground-sandbox/providers/Microsoft.Storage/storageAccounts/adventuredatalake1"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -61,6 +65,9 @@
 					},
 					"AdventureDataLake_properties_typeProperties_url": {
 						"value": "[parameters('AdventureDataLake_properties_typeProperties_url')]"
+					},
+					"TriggerOnCreateBlobEvent_properties_typeProperties_scope": {
+						"value": "[parameters('TriggerOnCreateBlobEvent_properties_typeProperties_scope')]"
 					}
 				}
 			},

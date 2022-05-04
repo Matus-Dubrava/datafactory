@@ -22,6 +22,10 @@
 		"AdventureDataLake_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adventuredatalake1.dfs.core.windows.net"
+		},
+		"TriggerOnCreateBlobEvent_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/4cedc5dd-e3ad-468d-bf66-32e31bdb9148/resourceGroups/1-abf7d663-playground-sandbox/providers/Microsoft.Storage/storageAccounts/adventuredatalake1"
 		}
 	},
 	"variables": {
@@ -421,6 +425,39 @@
 				"[concat(variables('factoryId'), '/datasets/EmployeesExternalDWTable')]",
 				"[concat(variables('factoryId'), '/datasets/EmployeesDWTable')]",
 				"[concat(variables('factoryId'), '/linkedServices/AdventureDataLake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TriggerOnCreateBlobEvent')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [
+					"testing"
+				],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "load_emp_data",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/data/blobs/raw/",
+					"blobPathEndsWith": "emp.csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('TriggerOnCreateBlobEvent_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/load_emp_data')]"
 			]
 		}
 	]
