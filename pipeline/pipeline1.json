@@ -26,13 +26,6 @@
 						"allowCopyCommand": true
 					},
 					"enableStaging": true,
-					"stagingSettings": {
-						"linkedServiceName": {
-							"referenceName": "AdventureDataLake",
-							"type": "LinkedServiceReference"
-						},
-						"path": "data/out"
-					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
