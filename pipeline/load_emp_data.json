@@ -136,6 +136,16 @@
 									"name": "load_id",
 									"type": "Int32"
 								}
+							},
+							{
+								"source": {
+									"name": "rows_loaded",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "rows_loaded",
+									"type": "Int32"
+								}
 							}
 						]
 					}
