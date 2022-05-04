@@ -1,0 +1,27 @@
+{
+	"name": "TriggerOnCreateBlobEvent",
+	"properties": {
+		"annotations": [
+			"testing"
+		],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "load_emp_data",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/data/blobs/raw/",
+			"blobPathEndsWith": "emp.csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/4cedc5dd-e3ad-468d-bf66-32e31bdb9148/resourceGroups/1-abf7d663-playground-sandbox/providers/Microsoft.Storage/storageAccounts/adventuredatalake1",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
