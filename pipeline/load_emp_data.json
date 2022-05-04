@@ -17,14 +17,138 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlDWSource",
+						"sqlReaderStoredProcedureName": "[dbo].[load_emp]",
 						"queryTimeout": "02:00:00",
+						"isolationLevel": "Snapshot",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "SqlDWSink",
+						"allowCopyCommand": true
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "AdventureDataLake",
+							"type": "LinkedServiceReference"
+						},
+						"path": "data/out"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "empid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "empid",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "empname",
+									"type": "String"
+								},
+								"sink": {
+									"name": "empname",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "job",
+									"type": "String"
+								},
+								"sink": {
+									"name": "job",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "mgrid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "mgrid",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "hiredate",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "hiredate",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "salary",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "salary",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "commission",
+									"type": "Decimal"
+								},
+								"sink": {
+									"name": "commission",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"name": "deptid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "deptid",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"name": "load_timestamp",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "load_timestamp",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "load_id",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "load_id",
+									"type": "Int32"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
 						"referenceName": "EmployeesExternalDWTable",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "EmployeesDWTable",
 						"type": "DatasetReference"
 					}
 				]
