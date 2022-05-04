@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adventuredatafactory111"
 		},
-		"AdventureDataLake_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'AdventureDataLake'"
-		},
 		"AdventureDatabase_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AdventureDatabase'"
@@ -18,6 +14,10 @@
 		"AdventureSynapseWarehouse_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AdventureSynapseWarehouse'"
+		},
+		"AdventureDataLake_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AdventureDataLake'"
 		},
 		"AdventureDataLake_properties_typeProperties_url": {
 			"type": "string",
@@ -28,178 +28,6 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "LoadData",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlDWSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[empdata]",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "SqlDWSink",
-								"allowCopyCommand": true,
-								"copyCommandSettings": {}
-							},
-							"enableStaging": true,
-							"stagingSettings": {
-								"linkedServiceName": {
-									"referenceName": "AdventureDataLake",
-									"type": "LinkedServiceReference"
-								},
-								"path": "data/out"
-							},
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "empid",
-											"type": "String"
-										},
-										"sink": {
-											"name": "empid",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"name": "empname",
-											"type": "String"
-										},
-										"sink": {
-											"name": "empname",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "job",
-											"type": "String"
-										},
-										"sink": {
-											"name": "job",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "mgrid",
-											"type": "String"
-										},
-										"sink": {
-											"name": "mgrid",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"name": "hiredate",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "hiredate",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "salary",
-											"type": "Decimal"
-										},
-										"sink": {
-											"name": "salary",
-											"type": "Decimal"
-										}
-									},
-									{
-										"source": {
-											"name": "commission",
-											"type": "Decimal"
-										},
-										"sink": {
-											"name": "commission",
-											"type": "Decimal"
-										}
-									},
-									{
-										"source": {
-											"name": "deptid",
-											"type": "String"
-										},
-										"sink": {
-											"name": "deptid",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"name": "load_time",
-											"type": "DateTime"
-										},
-										"sink": {
-											"name": "load_time",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "load_id",
-											"type": "Int32"
-										},
-										"sink": {
-											"name": "load_id",
-											"type": "Int32"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "EmployeesExternalDWTable",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "EmployeesDWTable",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/EmployeesExternalDWTable')]",
-				"[concat(variables('factoryId'), '/datasets/EmployeesDWTable')]",
-				"[concat(variables('factoryId'), '/linkedServices/AdventureDataLake')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/EmployeesCSV')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -380,23 +208,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AdventureDataLake')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('AdventureDataLake_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('AdventureDataLake_accountKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AdventureDatabase')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -410,6 +221,179 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/load_emp_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "load_emp_data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlDWSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[load_emp]",
+								"queryTimeout": "02:00:00",
+								"isolationLevel": "Snapshot",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"allowCopyCommand": true,
+								"copyCommandSettings": {}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "AdventureDataLake",
+									"type": "LinkedServiceReference"
+								},
+								"path": "data/out"
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "empid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "empid",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "empname",
+											"type": "String"
+										},
+										"sink": {
+											"name": "empname",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "job",
+											"type": "String"
+										},
+										"sink": {
+											"name": "job",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "mgrid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "mgrid",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "hiredate",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "hiredate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "salary",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "salary",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "commission",
+											"type": "Decimal"
+										},
+										"sink": {
+											"name": "commission",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "deptid",
+											"type": "String"
+										},
+										"sink": {
+											"name": "deptid",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "load_timestamp",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "load_timestamp",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "load_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "load_id",
+											"type": "Int32"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "EmployeesExternalDWTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "EmployeesDWTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/EmployeesExternalDWTable')]",
+				"[concat(variables('factoryId'), '/datasets/EmployeesDWTable')]",
+				"[concat(variables('factoryId'), '/linkedServices/AdventureDataLake')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AdventureSynapseWarehouse')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -418,6 +402,23 @@
 				"type": "AzureSqlDW",
 				"typeProperties": {
 					"connectionString": "[parameters('AdventureSynapseWarehouse_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AdventureDataLake')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AdventureDataLake_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AdventureDataLake_accountKey')]"
+					}
 				}
 			},
 			"dependsOn": []

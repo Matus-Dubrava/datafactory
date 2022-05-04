@@ -5,13 +5,13 @@
 		"factoryName": {
 			"value": "adventuredatafactory111"
 		},
-		"AdventureDataLake_accountKey": {
-			"value": ""
-		},
 		"AdventureDatabase_connectionString": {
 			"value": ""
 		},
 		"AdventureSynapseWarehouse_connectionString": {
+			"value": ""
+		},
+		"AdventureDataLake_accountKey": {
 			"value": ""
 		},
 		"AdventureDataLake_properties_typeProperties_url": {
